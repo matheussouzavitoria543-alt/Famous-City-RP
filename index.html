@@ -32,27 +32,11 @@
         <i data-feather="x" class="w-6 h-6"></i>
       </button>
     </div>
-
     <div class="space-y-6">
-      <!-- Tema -->
-      <div>
-        <h4 class="font-semibold mb-2">Tema do Sistema</h4>
-        <div class="flex gap-3 mb-4">
-          <button onclick="changeThemeColor('blue','#3B82F6')" class="w-10 h-10 rounded-lg bg-blue-500"></button>
-          <button onclick="changeThemeColor('green','#10B981')" class="w-10 h-10 rounded-lg bg-green-500"></button>
-          <button onclick="changeThemeColor('yellow','#F59E0B')" class="w-10 h-10 rounded-lg bg-yellow-500"></button>
-          <button onclick="changeThemeColor('red','#EF4444')" class="w-10 h-10 rounded-lg bg-red-500"></button>
-          <button onclick="changeThemeColor('purple','#8B5CF6')" class="w-10 h-10 rounded-lg bg-purple-500"></button>
-        </div>
-      </div>
-
-      <!-- Login Admin -->
-      <div class="pt-4 border-t">
-        <h4 class="font-semibold mb-2">Login do Administrador</h4>
-        <input id="adminUsername" type="text" placeholder="Usuário" class="w-full px-4 py-2 border rounded-lg mb-3">
-        <input id="adminPassword" type="password" placeholder="Senha" class="w-full px-4 py-2 border rounded-lg mb-3">
-        <button onclick="loginAdmin()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Entrar</button>
-      </div>
+      <h4 class="font-semibold mb-2">Login do Administrador</h4>
+      <input id="adminUsername" type="text" placeholder="Usuário" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-2">
+      <input id="adminPassword" type="password" placeholder="Senha" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-4">
+      <button onclick="loginAdmin()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Entrar</button>
     </div>
   </div>
 </div>
@@ -69,36 +53,25 @@
     <div class="space-y-4">
       <h4 class="font-semibold text-lg">Gerenciar Metas</h4>
       <div id="adminBarsList" class="space-y-2"></div>
+
       <h4 class="font-semibold text-lg mt-4">Mensagem Global</h4>
-      <input id="globalMessageInput" type="text" placeholder="Mensagem para todos" class="w-full px-3 py-2 border rounded-lg">
-      <div class="flex gap-2 mt-2">
+      <input id="globalMessageInput" type="text" placeholder="Mensagem para todos os membros" class="w-full px-3 py-2 border rounded-lg mb-2">
+      <div class="flex gap-2">
         <button onclick="sendGlobalMessage()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Enviar</button>
-        <button onclick="clearAllProofs()" class="bg-gray-200 px-3 py-2 rounded hover:bg-gray-300">Limpar provas</button>
+      </div>
+
+      <h4 class="font-semibold text-lg mt-4">Administradores</h4>
+      <div id="adminList" class="space-y-2"></div>
+      <div class="flex gap-2 mt-2">
+        <input id="newAdminUser" placeholder="Novo usuário" class="px-3 py-2 border rounded flex-1">
+        <input id="newAdminPass" placeholder="Senha" class="px-3 py-2 border rounded w-36">
+        <button onclick="createAdmin()" class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600">Criar</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Mensagem Global -->
-<div id="globalMessageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-  <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 relative">
-    <div class="absolute top-4 right-4">
-      <button onclick="closeGlobalMessage()" class="text-gray-500 hover:text-gray-700">
-        <i data-feather="x" class="w-6 h-6"></i>
-      </button>
-    </div>
-    <div class="flex flex-col items-center text-center">
-      <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
-        <i data-feather="alert-triangle" class="text-yellow-500 w-8 h-8"></i>
-      </div>
-      <h3 class="text-xl font-bold text-gray-800 mb-2">Mensagem da Moderação</h3>
-      <p id="globalMessageText" class="text-gray-600 mb-6"></p>
-      <button onclick="closeGlobalMessage()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Entendi</button>
-    </div>
-  </div>
-</div>
-
-<!-- Header -->
+<!-- Barra Geral -->
 <div class="container mx-auto px-4 py-8">
   <header class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-blue-500">Progresso em Foco</h1>
@@ -113,7 +86,7 @@
     <h2 class="text-xl font-semibold mb-4">Adicionar Nova Meta</h2>
     <div class="flex gap-4">
       <input id="newBarName" type="text" placeholder="Nome da Meta" class="border rounded p-2 flex-1">
-      <input id="newBarMember" type="text" placeholder="Seu Nome" class="border rounded p-2 flex-1">
+      <input id="newBarMember" type="text" placeholder="Seu nome" class="border rounded p-2 flex-1">
       <button id="addBarBtn" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Adicionar</button>
     </div>
   </div>
@@ -130,181 +103,188 @@
 
 <!-- Firebase SDK -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDun-EEYvE7pUYtJCS7APB6J4xSD-gN0oE",
-    authDomain: "famous-city-rp.firebaseapp.com",
-    databaseURL: "https://famous-city-rp-default-rtdb.firebaseio.com",
-    projectId: "famous-city-rp",
-    storageBucket: "famous-city-rp.firebasestorage.app",
-    messagingSenderId: "938453127813",
-    appId: "1:938453127813:web:a3b9b977039a39babacfec",
-    measurementId: "G-HQ8SGS11BP"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDun-EEYvE7pUYtJCS7APB6J4xSD-gN0oE",
+  authDomain: "famous-city-rp.firebaseapp.com",
+  databaseURL: "https://famous-city-rp-default-rtdb.firebaseio.com",
+  projectId: "famous-city-rp",
+  storageBucket: "famous-city-rp.firebasestorage.app",
+  messagingSenderId: "938453127813",
+  appId: "1:938453127813:web:a3b9b977039a39babacfec",
+  measurementId: "G-HQ8SGS11BP"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  feather.replace();
+feather.replace();
 
-  let isAdmin = false;
-  let bars = [];
+let isAdmin = false;
 
-  // ---------------- Funções ----------------
+// --- Administradores ---
+function saveAdminToFirebase(username, password){
+  push(ref(db, 'admins/'), { username, password });
+}
 
-  function showNotification(msg){
-    const el = document.getElementById('notification');
-    document.getElementById('notification-message').textContent = msg;
-    el.classList.remove('hidden');
-    setTimeout(()=>el.classList.add('hidden'), 2500);
-  }
-
-  function openSettingsModal(){ document.getElementById('settingsModal').classList.remove('hidden'); }
-  function closeSettingsModal(){ document.getElementById('settingsModal').classList.add('hidden'); }
-
-  function openAdminModal(){
-    if(!isAdmin){ alert('Somente administradores podem acessar!'); return; }
-    document.getElementById('adminModal').classList.remove('hidden');
-    renderAdminBars();
-  }
-  function closeAdminModal(){ document.getElementById('adminModal').classList.add('hidden'); }
-
-  // ----------------- CRUD de Barras -----------------
-  function renderBars(){
-    const container = document.getElementById('barsContainer');
-    container.innerHTML = '';
-    bars.forEach((bar, index)=>{
-      const barEl = document.createElement('div');
-      barEl.className = 'bg-white rounded-lg shadow p-6';
-      barEl.innerHTML = `
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">${bar.name} <span class="text-sm text-gray-500">(${bar.member})</span></h3>
-          <span>${bar.progress || 0}%</span>
-        </div>
-        <div class="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden mb-2">
-          <div class="progress-bar h-full rounded-full" style="width:${bar.progress || 0}%; background-color:#3B82F6"></div>
-        </div>
-      `;
-      container.appendChild(barEl);
-    });
-  }
-
-  function renderAdminBars(){
-    const container = document.getElementById('adminBarsList');
-    container.innerHTML = '';
-    bars.forEach((bar, index)=>{
-      const div = document.createElement('div');
-      div.className = 'flex justify-between items-center p-2 bg-gray-50 rounded';
-      div.innerHTML = `
-        <span>${bar.name} (${bar.member}) - ${bar.progress || 0}%</span>
-        <div class="flex gap-2">
-          <button onclick="adjustProgress(${index})" class="text-blue-500 hover:underline">Ajustar</button>
-          <button onclick="deleteBar(${index})" class="text-red-500 hover:underline">Excluir</button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-  }
-
-  document.getElementById('addBarBtn').addEventListener('click', ()=>{
-    const name = document.getElementById('newBarName').value.trim();
-    const member = document.getElementById('newBarMember').value.trim();
-    if(!name || !member){ alert('Preencha todos os campos'); return; }
-
-    const newBar = {name, member, progress:0};
-    bars.push(newBar);
-
-    const barRef = push(ref(db, 'bars'));
-    set(barRef, newBar);
-
-    document.getElementById('newBarName').value = '';
-    document.getElementById('newBarMember').value = '';
-    renderBars();
-    renderAdminBars();
-    updateLeaderboard();
-    showNotification('Meta adicionada!');
+function fetchAdmins(){
+  const adminsRef = ref(db, 'admins/');
+  let admins = [];
+  onValue(adminsRef, (snapshot) => {
+    admins = [];
+    snapshot.forEach(child => admins.push(child.val()));
+    renderAdminList(admins);
   });
+  return admins;
+}
 
-  function updateLeaderboard(){
-    const lb = document.getElementById('leaderboard');
-    lb.innerHTML = '';
-    const sorted = [...bars].sort((a,b)=> (b.progress||0)-(a.progress||0));
-    sorted.forEach(b=>{
-      const div = document.createElement('div');
-      div.className = 'flex justify-between bg-gray-100 p-2 rounded';
-      div.innerHTML = `<span>${b.member} - ${b.name}</span><span>${b.progress || 0}%</span>`;
-      lb.appendChild(div);
+function createAdmin(){
+  const u = document.getElementById('newAdminUser').value.trim();
+  const p = document.getElementById('newAdminPass').value.trim();
+  if(!u || !p){ alert('Preencha usuário e senha'); return; }
+  saveAdminToFirebase(u,p);
+  document.getElementById('newAdminUser').value='';
+  document.getElementById('newAdminPass').value='';
+  fetchAdmins();
+  showNotification('Administrador criado');
+}
+
+function loginAdmin(){
+  const user = document.getElementById('adminUsername').value.trim();
+  const pass = document.getElementById('adminPassword').value.trim();
+  if(!user || !pass){ alert('Preencha usuário e senha'); return; }
+
+  const adminsRef = ref(db,'admins/');
+  onValue(adminsRef, (snapshot) => {
+    let found = false;
+    snapshot.forEach(child => {
+      const a = child.val();
+      if(a.username===user && a.password===pass) found = true;
     });
-  }
-
-  function deleteBar(index){
-    if(!confirm('Deseja realmente excluir esta meta?')) return;
-    bars.splice(index,1);
-    renderBars();
-    renderAdminBars();
-    updateLeaderboard();
-    showNotification('Meta excluída!');
-  }
-
-  function adjustProgress(index){
-    const p = prompt('Digite o progresso (0-100):', bars[index].progress);
-    if(p===null) return;
-    const val = Number(p);
-    if(isNaN(val)||val<0||val>100){ alert('Valor inválido'); return; }
-    bars[index].progress = val;
-    renderBars();
-    renderAdminBars();
-    updateLeaderboard();
-    showNotification('Progresso ajustado!');
-  }
-
-  // ----------------- Mensagem Global -----------------
-  function sendGlobalMessage(){
-    const msg = document.getElementById('globalMessageInput').value.trim();
-    if(!msg){ alert('Digite uma mensagem'); return; }
-    set(ref(db,'globalMessage'), {text: msg});
-    document.getElementById('globalMessageInput').value='';
-  }
-
-  function closeGlobalMessage(){
-    document.getElementById('globalMessageModal').classList.add('hidden');
-  }
-
-  // ----------------- Login Admin -----------------
-  let admins = [{username:'admin',password:'123456'}];
-
-  function loginAdmin(){
-    const user = document.getElementById('adminUsername').value.trim();
-    const pass = document.getElementById('adminPassword').value.trim();
-    const found = admins.find(a=>a.username===user && a.password===pass);
     if(found){
-      isAdmin=true;
+      isAdmin = true;
       document.getElementById('adminBtn').classList.remove('hidden');
       closeSettingsModal();
       showNotification('Login de administrador realizado!');
-      renderAdminBars();
-    } else { alert('Usuário ou senha incorretos'); }
-  }
+    } else alert('Usuário ou senha incorretos.');
+  }, {onlyOnce:true});
+}
 
-  // ----------------- Firebase Listener -----------------
-  onValue(ref(db,'bars'), snapshot=>{
-    const data = snapshot.val();
-    bars = data ? Object.values(data) : [];
-    renderBars();
-    renderAdminBars();
-    updateLeaderboard();
+// --- Barras ---
+function saveBarToFirebase(name, member){
+  push(ref(db,'bars/'), {name, member, progress:0, proofs:[]});
+}
+
+function fetchBars(){
+  const barsRef = ref(db,'bars/');
+  onValue(barsRef, (snapshot)=>{
+    const bars = [];
+    snapshot.forEach(child => {
+      bars.push({key: child.key, ...child.val()});
+    });
+    renderBars(bars);
+    renderLeaderboard(bars);
+    renderAdminBars(bars);
   });
+}
 
-  onValue(ref(db,'globalMessage'), snapshot=>{
-    const msgObj = snapshot.val();
-    if(msgObj && msgObj.text){
-      document.getElementById('globalMessageText').innerText = msgObj.text;
-      document.getElementById('globalMessageModal').classList.remove('hidden');
+// --- Mensagem Global ---
+function sendGlobalMessage(){
+  const msg = document.getElementById('globalMessageInput').value.trim();
+  if(!msg){ alert('Digite uma mensagem'); return; }
+  set(ref(db,'globalMessage/'), { message: msg });
+  document.getElementById('globalMessageInput').value='';
+  showNotification('Mensagem enviada');
+}
+
+function fetchGlobalMessage(){
+  const msgRef = ref(db,'globalMessage/');
+  onValue(msgRef, (snapshot)=>{
+    const data = snapshot.val();
+    if(data && data.message){
+      alert(`Mensagem Global: ${data.message}`);
     }
   });
+}
 
+// --- Notificação ---
+function showNotification(msg){
+  const el = document.getElementById('notification');
+  document.getElementById('notification-message').textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(()=>el.classList.add('hidden'), 2500);
+}
+
+// --- Modais ---
+function openSettingsModal(){ document.getElementById('settingsModal').classList.remove('hidden'); }
+function closeSettingsModal(){ document.getElementById('settingsModal').classList.add('hidden'); }
+function openAdminModal(){ if(!isAdmin){ alert('Somente administradores!'); return; } document.getElementById('adminModal').classList.remove('hidden'); }
+function closeAdminModal(){ document.getElementById('adminModal').classList.add('hidden'); }
+
+// --- Render ---
+function renderAdminList(admins){
+  const el = document.getElementById('adminList');
+  el.innerHTML = '';
+  admins.forEach(a=>{
+    el.innerHTML += `<div class="flex justify-between items-center p-2 bg-gray-50 rounded"><span>${a.username}</span></div>`;
+  });
+}
+
+function renderBars(bars){
+  const container = document.getElementById('barsContainer');
+  container.innerHTML = '';
+  bars.forEach((bar, index)=>{
+    container.innerHTML += `
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold">${bar.name} <span class="text-sm text-gray-500">(${bar.member})</span></h3>
+          <div class="flex items-center gap-2"></div>
+        </div>
+        <div class="flex items-center space-x-4 mb-2">
+          <div class="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+            <div class="progress-bar h-full rounded-full" style="width:${bar.progress}%; background-color:#3B82F6"></div>
+          </div>
+          <span>${bar.progress}%</span>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderLeaderboard(bars){
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = '';
+  const sorted = [...bars].sort((a,b)=>b.progress - a.progress);
+  sorted.forEach(b=>{
+    lb.innerHTML += `<div class="flex justify-between bg-gray-100 p-2 rounded"><span>${b.member} - ${b.name}</span><span>${b.progress}%</span></div>`;
+  });
+}
+
+function renderAdminBars(bars){
+  const container = document.getElementById('adminBarsList');
+  container.innerHTML = '';
+  bars.forEach((b,i)=>{
+    container.innerHTML += `<div class="flex justify-between items-center p-2 bg-gray-50 rounded"><strong>${b.name}</strong> <span>${b.member}</span></div>`;
+  });
+}
+
+// --- Eventos ---
+document.getElementById('addBarBtn').addEventListener('click',()=>{
+  const name = document.getElementById('newBarName').value.trim();
+  const member = document.getElementById('newBarMember').value.trim();
+  if(!name || !member){ alert('Digite nome da meta e seu nome'); return; }
+  saveBarToFirebase(name, member);
+  document.getElementById('newBarName').value='';
+  document.getElementById('newBarMember').value='';
+});
+
+// --- Inicialização ---
+fetchAdmins();
+fetchBars();
+fetchGlobalMessage();
 </script>
+
 </body>
 </html>
