@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progresso em Foco - Completo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<style>
+  body { transition: background-color 0.3s ease; }
+  .progress-bar { transition: width 0.8s ease-in-out; }
+  .notification { animation: slideIn 0.5s forwards, fadeOut 0.5s 2.5s forwards; }
+  @keyframes slideIn { from {transform: translateY(-100px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+  @keyframes fadeOut { from{opacity:1;} to{opacity:0;} }
+  .proof-card { transition: transform 0.3s, box-shadow 0.3s; }
+  .proof-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+<!-- Notificação -->
+<div id="notification" class="notification fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden">
+  <div class="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+    <i data-feather="alert-circle" class="mr-2"></i>
+    <span id="notification-message"></span>
+  </div>
+</div>
+
+<!-- Modal Visualizar Imagem -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-2xl p-4 max-w-lg w-full relative transition-all transform scale-0 duration-300">
+    <button onclick="closeImageModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-600">
+      <i data-feather="x"></i>
+    </button>
+    <img id="modalImage" src="" class="w-full rounded-xl shadow-lg">
+    <p id="modalDate" class="text-center mt-2 text-gray-600"></p>
+  </div>
+</div>
+
+<!-- Modal Admin -->
+<div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-2xl font-bold text-gray-700">Painel Administrativo</h3>
+      <button onclick="closeAdminModal()" class="text-gray-500 hover:text-red-500">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+    <div class="space-y-6">
+      <!-- Abas -->
+      <div class="flex gap-4">
+        <button id="tabMessage" class="flex-1 py-2 font-semibold text-blue-600 border-b-2 border-blue-600">Mensagem Global</button>
+        <button id="tabCreds" class="flex-1 py-2 font-semibold text-gray-500 border-b-2 border-transparent hover:text-blue-600">Credenciais</button>
+      </div>
+      <div id="contentMessage">
+        <textarea id="globalMessageInput" class="w-full border rounded p-2 h-24" placeholder="Digite a mensagem global"></textarea>
+        <button onclick="sendGlobalMessage()" class="w-full mt-2 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Enviar Mensagem</button>
+      </div>
+      <div id="contentCreds" class="hidden">
+        <button onclick="generateAdminCredentials()" class="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Gerar Credenciais</button>
+        <div id="adminCredentials" class="mt-4 p-2 bg-gray-100 rounded hidden">
+          <p class="text-sm">Salve estas credenciais:</p>
+          <p id="generatedAdmin" class="font-mono"></p>
+          <p id="generatedPassword" class="font-mono"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Container Principal -->
+<div class="container mx-auto px-4 py-8">
+  <header class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold text-blue-600">Progresso em Foco</h1>
+    <div class="flex space-x-4">
+      <button onclick="openAdminModal()" class="p-3 bg-blue-100 rounded-full hover:bg-blue-200 transition">
+        <i data-feather="shield"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Adicionar Nova Meta -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Adicionar Nova Meta</h2>
+    <div class="flex gap-4">
+      <input id="newBarName" type="text" placeholder="Nome da Meta" class="border rounded-lg p-2 flex-1 focus:ring-2 focus:ring-blue-400">
+      <button onclick="addNewBar()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Adicionar</button>
+    </div>
+  </div>
+
+  <!-- Container de Metas -->
+  <div id="barsContainer" class="space-y-6"></div>
+</div>
+
+<script>
+let bars = JSON.parse(localStorage.getItem('progressBars')) || [];
+let adminCredentials = JSON.parse(localStorage.getItem('adminCredentials')) || null;
+
+document.addEventListener('DOMContentLoaded',()=>{renderBars();feather.replace();});
+
+function openAdminModal(){document.getElementById('adminModal').classList.remove('hidden');}
+function closeAdminModal(){document.getElementById('adminModal').classList.add('hidden');}
+function generateAdminCredentials(){
+  const user='admin'+Math.floor(Math.random()*1000);
+  const pass=Math.random().toString(36).slice(-8);
+  document.getElementById('generatedAdmin').textContent=user;
+  document.getElementById('generatedPassword').textContent=pass;
+  document.getElementById('adminCredentials').classList.remove('hidden');
+  localStorage.setItem('adminCredentials',JSON.stringify({user,pass}));
+}
+
+document.getElementById('tabMessage').addEventListener('click',()=>{
+  document.getElementById('contentMessage').classList.remove('hidden');
+  document.getElementById('contentCreds').classList.add('hidden');
+  document.getElementById('tabMessage').classList.add('text-blue-600','border-blue-600');
+  document.getElementById('tabMessage').classList.remove('text-gray-500');
+  document.getElementById('tabCreds').classList.remove('text-blue-600','border-blue-600');
+  document.getElementById('tabCreds').classList.add('text-gray-500');
+});
+document.getElementById('tabCreds').addEventListener('click',()=>{
+  document.getElementById('contentMessage').classList.add('hidden');
+  document.getElementById('contentCreds').classList.remove('hidden');
+  document.getElementById('tabCreds').classList.add('text-blue-600','border-blue-600');
+  document.getElementById('tabCreds').classList.remove('text-gray-500');
+  document.getElementById('tabMessage').classList.remove('text-blue-600','border-blue-600');
+  document.getElementById('tabMessage').classList.add('text-gray-500');
+});
+
+function showNotification(msg){const b=document.getElementById('notification');const t=document.getElementById('notification-message');t.textContent=msg;b.classList.remove('hidden');setTimeout(()=>{b.classList.add('hidden');},3000);}
+function addNewBar(){const name=document.getElementById('newBarName').value.trim();if(name){bars.push({name:name,progress:0,proofs:[]});localStorage.setItem('progressBars',JSON.stringify(bars));document.getElementById('newBarName').value='';renderBars();showNotification("Meta adicionada com sucesso!");} else {showNotification("Digite um nome para a meta.");}}
+function deleteBar(i){bars.splice(i,1);localStorage.setItem('progressBars',JSON.stringify(bars));renderBars();showNotification("Meta removida!");}
+function handleFileUpload(barIndex,file){if(!file)return;const reader=new FileReader();reader.onload=function(e){bars[barIndex].proofs.push({date:new Date().toISOString(),image:e.target.result});bars[barIndex].progress=Math.min(bars[barIndex].progress+10,100);localStorage.setItem('progressBars',JSON.stringify(bars));renderBars();showNotification("Comprovação adicionada!");};reader.readAsDataURL(file);}
+
+function renderBars(){
+  const container=document.getElementById('barsContainer');container.innerHTML='';
+  bars.forEach((bar,index)=>{
+    const barEl=document.createElement('div');barEl.className='bg-white rounded-2xl shadow-lg p-6';
+    barEl.innerHTML=`<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold">${bar.name}</h3><button onclick="deleteBar(${index})" class="text-red-500 hover:text-red-700"><i data-feather="trash-2"></i></button></div><div class="flex items-center space-x-4 mb-4"><div class="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden shadow-inner"><div class="progress-bar h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full" style="width:${bar.progress}%;"></div></div><span>${bar.progress}%</span></div><div><input type="file" id="proof-${index}" accept="image/*" class="hidden" onchange="handleFileUpload(${index}, this.files[0])"><label for="proof-${index}" class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-2 transition"><i data-feather="camera"></i> Enviar Comprovação</label></div>`;
+    container.appendChild(barEl);
+  });
+  feather.replace();
+}
+</script>
+</body>
+</html>
