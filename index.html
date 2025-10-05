@@ -260,9 +260,9 @@ function loginAdmin(){
   const user = document.getElementById('adminUsername').value.trim();
   const pass = document.getElementById('adminPassword').value.trim();
   if(!user || !pass){ alert('Preencha usuário e senha'); return; }
-  get(ref(db,'credentials')).then(snap=>{
-    const creds = snap.val() || {};
-    const valid = Object.values(creds).some(c => c.username === user && c.password === pass);
+  get(ref(db,'admins')).then(snap=>{
+    const admins = snap.val() || {};
+    const valid = Object.values(admins).some(a => a.username === user && a.password === pass);
     if(valid){
       isAdmin = true;
       currentUser = user;
