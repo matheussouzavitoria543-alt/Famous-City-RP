@@ -6,38 +6,21 @@
 <title>Progresso em Foco</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/feather-icons"></script>
-
 <style>
 :root { --primary-color: #3B82F6; }
 .progress-bar { transition: width 0.5s ease-in-out; }
 .notification { animation: slideIn 0.5s forwards, fadeOut 0.5s 2.5s forwards; }
 @keyframes slideIn { from { transform: translateY(-100px); opacity:0;} to { transform: translateY(0); opacity:1; } }
 @keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
-
 /* === ANIMAÇÕES DO MODAL === */
-.fade-enter {
-  opacity: 0;
-  transform: scale(0.95);
-}
-.fade-enter-active {
-  opacity: 1;
-  transform: scale(1);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.fade-leave {
-  opacity: 1;
-  transform: scale(1);
-}
-.fade-leave-active {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
+.fade-enter { opacity: 0; transform: scale(0.95); }
+.fade-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.3s ease, transform 0.3s ease; }
+.fade-leave { opacity: 1; transform: scale(1); }
+.fade-leave-active { opacity:0; transform: scale(0.95); transition: opacity 0.2s ease, transform 0.2s ease; }
 </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-<!-- Notificação -->
 <div id="notification" class="notification fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden">
   <div class="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
     <i data-feather="alert-circle" class="mr-2"></i>
@@ -45,7 +28,7 @@
   </div>
 </div>
 
-<!-- Modal mensagem global, aparece no centro com título e botão fechar -->
+<!-- Modal global message -->
 <div id="globalMessageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
   <div class="bg-white rounded-lg shadow-lg p-6 max-w-md text-center">
     <h2 class="text-xl font-bold mb-4">Mensagem da Moderação</h2>
@@ -54,82 +37,91 @@
   </div>
 </div>
 
-<!-- BOTÃO DE CONFIGURAÇÕES (CANTO SUPERIOR DIREITO) -->
-<button 
-  onclick="openSettingsModal()" 
-  class="fixed top-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition"
-  title="Configurações"
->
+<button onclick="openSettingsModal()" class="fixed top-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition" title="Configurações">
   <i data-feather="settings" class="w-6 h-6"></i>
 </button>
 
-<!-- Ícone da área administrativa: Escudo, aparece só para admin após login -->
-<button 
-  id="adminShieldBtn"
-  onclick="openAdminPanel()"
-  class="fixed top-4 right-16 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition hidden"
-  title="Painel Administrativo"
->
+<button id="adminShieldBtn" onclick="openAdminPanel()" class="fixed top-4 right-16 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition hidden" title="Painel Administrativo">
   <i data-feather="shield" class="w-6 h-6"></i>
 </button>
 
-<!-- Modal Configurações -->
 <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
   <div id="settingsContent" class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md overflow-auto max-h-[90vh] fade-enter">
     <div class="flex justify-between items-center mb-6 border-b pb-4">
       <h3 class="text-2xl font-bold text-gray-800">Configurações</h3>
-      <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-700">
-        <i data-feather="x" class="w-6 h-6"></i>
-      </button>
+      <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-700"><i data-feather="x" class="w-6 h-6"></i></button>
     </div>
 
-    <!-- Configurações membros -->
-    <div id="memberSettings" class="space-y-6">
-      <h4 class="font-semibold mb-2">Tema do Sistema</h4>
-      <div class="flex gap-3 mb-4">
-        <button onclick="changeThemeColorMember('#3B82F6')" class="w-10 h-10 rounded-lg bg-blue-500" title="Azul"></button>
-        <button onclick="changeThemeColorMember('#10B981')" class="w-10 h-10 rounded-lg bg-green-500" title="Verde"></button>
-        <button onclick="changeThemeColorMember('#F59E0B')" class="w-10 h-10 rounded-lg bg-yellow-500" title="Amarelo"></button>
-        <button onclick="changeThemeColorMember('#EF4444')" class="w-10 h-10 rounded-lg bg-red-500" title="Vermelho"></button>
-        <button onclick="changeThemeColorMember('#8B5CF6')" class="w-10 h-10 rounded-lg bg-purple-500" title="Roxo"></button>
-      </div>
+<div id="memberSettings" class="space-y-6">
+  <h4 class="font-semibold mb-2">Tema do Sistema</h4>
+  <div class="flex gap-3 mb-4">
+    <button onclick="changeThemeColorMember('#3B82F6')" class="w-10 h-10 rounded-lg bg-blue-500" title="Azul"></button>
+    <button onclick="changeThemeColorMember('#10B981')" class="w-10 h-10 rounded-lg bg-green-500" title="Verde"></button>
+    <button onclick="changeThemeColorMember('#F59E0B')" class="w-10 h-10 rounded-lg bg-yellow-500" title="Amarelo"></button>
+    <button onclick="changeThemeColorMember('#EF4444')" class="w-10 h-10 rounded-lg bg-red-500" title="Vermelho"></button>
+    <button onclick="changeThemeColorMember('#8B5CF6')" class="w-10 h-10 rounded-lg bg-purple-500" title="Roxo"></button>
+  </div>
 
-      <h4 class="font-semibold mb-2">Cor das Barras</h4>
-      <div class="flex gap-3">
-        <button onclick="changeBarColorMember('#3B82F6')" class="w-10 h-10 rounded-lg bg-blue-500" title="Azul"></button>
-        <button onclick="changeBarColorMember('#10B981')" class="w-10 h-10 rounded-lg bg-green-500" title="Verde"></button>
-        <button onclick="changeBarColorMember('#F59E0B')" class="w-10 h-10 rounded-lg bg-yellow-500" title="Amarelo"></button>
-        <button onclick="changeBarColorMember('#EF4444')" class="w-10 h-10 rounded-lg bg-red-500" title="Vermelho"></button>
-        <button onclick="changeBarColorMember('#8B5CF6')" class="w-10 h-10 rounded-lg bg-purple-500" title="Roxo"></button>
-      </div>
+  <h4 class="font-semibold mb-2">Cor das Barras</h4>
+  <div class="flex gap-3">
+    <button onclick="changeBarColorMember('#3B82F6')" class="w-10 h-10 rounded-lg bg-blue-500" title="Azul"></button>
+    <button onclick="changeBarColorMember('#10B981')" class="w-10 h-10 rounded-lg bg-green-500" title="Verde"></button>
+    <button onclick="changeBarColorMember('#F59E0B')" class="w-10 h-10 rounded-lg bg-yellow-500" title="Amarelo"></button>
+    <button onclick="changeBarColorMember('#EF4444')" class="w-10 h-10 rounded-lg bg-red-500" title="Vermelho"></button>
+    <button onclick="changeBarColorMember('#8B5CF6')" class="w-10 h-10 rounded-lg bg-purple-500" title="Roxo"></button>
+  </div>
 
-      <div class="pt-4 border-t">
-        <h4 class="font-semibold mb-2">Login do Administrador</h4>
-        <input id="adminUsername" type="text" placeholder="Usuário" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-2" />
-        <input id="adminPassword" type="password" placeholder="Senha" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-2" />
-        <button onclick="loginAdmin()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Entrar como Admin</button>
-      </div>
-    </div>
+  <h4 class="font-semibold mb-2">Cor do Fundo</h4>
+  <div class="flex gap-3">
+    <button onclick="changeBackgroundColorMember('#F3F4F6')" class="w-10 h-10 rounded-lg bg-gray-100 border" title="Claro"></button>
+    <button onclick="changeBackgroundColorMember('#1E293B')" class="w-10 h-10 rounded-lg bg-gray-800 border" title="Escuro"></button>
+    <button onclick="changeBackgroundColorMember('#84CC16')" class="w-10 h-10 rounded-lg bg-lime-500 border" title="Verde"></button>
+  </div>
 
-    <!-- Configurações admin -->
-    <div id="adminSettings" class="space-y-6 hidden">
-      <h4 class="font-semibold text-lg">Painel Administrativo</h4>
-      <h4 class="font-semibold">Mensagem Global</h4>
-      <input id="globalMessageInput" type="text" placeholder="Mensagem para todos" class="w-full px-3 py-2 border rounded-lg" />
-      <button onclick="sendGlobalMessage()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600">Enviar</button>
+  <div class="pt-4 border-t">
+    <h4 class="font-semibold mb-2">Login do Administrador</h4>
+    <input id="adminUsername" type="text" placeholder="Usuário" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-2" />
+    <input id="adminPassword" type="password" placeholder="Senha" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 mb-2" />
+    <button onclick="loginAdmin()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Entrar como Admin</button>
+  </div>
+</div>
 
-      <h4 class="font-semibold mt-4">Gerar Credenciais</h4>
-      <input id="newCredentialUser" placeholder="Usuário" class="px-3 py-2 border rounded w-full mb-2" />
-      <input id="newCredentialPass" placeholder="Senha" class="px-3 py-2 border rounded w-full mb-2" />
-      <button onclick="createCredential()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Gerar Credencial</button>
+<div id="adminSettings" class="space-y-6 hidden">
+  <h4 class="font-semibold text-lg">Painel Administrativo</h4>
 
-      <h4 class="font-semibold mt-4">Credenciais Geradas</h4>
-      <div id="adminList" class="space-y-2 bg-gray-100 p-2 rounded max-h-40 overflow-auto"></div>
+  <h4 class="font-semibold">Mensagem Global</h4>
+  <input id="globalMessageInput" type="text" placeholder="Mensagem para todos" class="w-full px-3 py-2 border rounded-lg" />
+  <button onclick="sendGlobalMessage()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2 hover:bg-blue-600">Enviar</button>
+
+  <h4 class="font-semibold mt-4">Configurações de Cores Globais</h4>
+  <div class="mb-2 flex items-center gap-2">
+    <label class="w-32 font-semibold">Cor do Tema</label>
+    <input type="color" onchange="changeThemeColor(this.value)" />
+  </div>
+  <div class="mb-2 flex items-center gap-2">
+    <label class="w-32 font-semibold">Cor da Barra</label>
+    <input type="color" onchange="changeBarColor(this.value)" />
+  </div>
+  <div class="mb-2 flex items-center gap-2">
+    <label class="w-32 font-semibold">Cor do Fundo</label>
+    <input type="color" onchange="changeBackgroundColor(this.value)" />
+  </div>
+
+  <h4 class="font-semibold mt-4">Gerar Credenciais</h4>
+  <input id="newCredentialUser" placeholder="Usuário" class="px-3 py-2 border rounded w-full mb-2" />
+  <input id="newCredentialPass" placeholder="Senha" class="px-3 py-2 border rounded w-full mb-2" />
+  <button onclick="createCredential()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Gerar Credencial</button>
+
+  <h4 class="font-semibold mt-4">Credenciais Geradas</h4>
+  <div id="adminList" class="space-y-2 bg-gray-100 p-2 rounded max-h-40 overflow-auto"></div>
+
+  <h4 class="font-semibold mt-4">Provas Enviadas (Admin)</h4>
+  <div id="proofsPanel" class="space-y-4 p-4 border rounded bg-gray-50 max-h-64 overflow-auto"></div>
+</div>
     </div>
   </div>
 </div>
 
-<!-- Conteúdo Principal -->
 <div class="container mx-auto px-4 py-8">
   <header class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-blue-500">Progresso em Foco</h1>
@@ -208,17 +200,68 @@ function showAdminShieldIcon(){
   feather.replace();
 }
 
-function changeThemeColor(hex){
-  document.documentElement.style.setProperty('--primary-color', hex);
-  showNotification('Tema alterado');
-  if(isAdmin) set(ref(db, 'globalColors/themeColor'), hex);
+document.addEventListener('DOMContentLoaded', () => {
+  const adminLogged = sessionStorage.getItem('adminLogged');
+  if(adminLogged === 'true'){
+    isAdmin = true;
+    document.getElementById('memberSettings').classList.add('hidden');
+    document.getElementById('adminSettings').classList.remove('hidden');
+    showAdminShieldIcon();
+    loadCredentials();
+    renderProofsPanel();
+  } else {
+    loadLocalThemeColors();
+  }
+  feather.replace();
+});
+
+async function loginAdmin(){
+  const user = document.getElementById('adminUsername').value.trim();
+  const pass = document.getElementById('adminPassword').value.trim();
+  if(!user || !pass){ alert('Preencha usuário e senha'); return; }
+
+  const [adminsSnap, credsSnap] = await Promise.all([
+    get(ref(db,'admins')),
+    get(ref(db,'credentials'))
+  ]);
+  const admins = adminsSnap.val() || {};
+  const creds = credsSnap.val() || {};
+
+  const validAdmin = Object.values(admins).some(a => a.username === user && a.password === pass);
+  const validCred = Object.values(creds).some(c => c.username === user && c.password === pass);
+
+  if(validAdmin || validCred){
+    isAdmin = true;
+    currentUser = user;
+    sessionStorage.setItem('adminLogged', 'true');
+    document.getElementById('memberSettings').classList.add('hidden');
+    document.getElementById('adminSettings').classList.remove('hidden');
+    showNotification('Login de administrador realizado!');
+    showAdminShieldIcon();
+    loadCredentials();
+    renderProofsPanel();
+  } else alert('Usuário ou senha incorretos.');
 }
 
+function changeThemeColor(hex){
+  if(isAdmin){
+    set(ref(db, 'globalColors/themeColor'), hex);
+    showNotification('Tema alterado para todos!');
+  }
+}
 function changeBarColor(hex){
-  barColor = hex;
-  renderBars();
-  showNotification('Cor da barra alterada');
-  if(isAdmin) set(ref(db, 'globalColors/barColor'), hex);
+  if(isAdmin){
+    barColor = hex;
+    renderBars();
+    set(ref(db, 'globalColors/barColor'), hex);
+    showNotification('Cor da barra alterada para todos!');
+  }
+}
+function changeBackgroundColor(hex){
+  if(isAdmin){
+    set(ref(db, 'globalColors/backgroundColor'), hex);
+    showNotification('Fundo alterado para todos!');
+  }
 }
 
 function changeThemeColorMember(hex){
@@ -231,6 +274,12 @@ function changeBarColorMember(hex){
   renderBars();
   saveLocalThemeColors(document.documentElement.style.getPropertyValue('--primary-color').trim(), hex);
   showNotification('Cor da barra alterada para você');
+}
+function changeBackgroundColorMember(hex){
+  document.body.style.backgroundColor = hex;
+  let theme = document.documentElement.style.getPropertyValue('--primary-color').trim();
+  saveLocalThemeColors(theme, barColor);
+  showNotification('Fundo alterado para você');
 }
 
 function saveLocalThemeColors(themeColor, barColor){
@@ -248,32 +297,6 @@ function loadLocalThemeColors(){
     barColor = bar;
     renderBars();
   }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  if(!isAdmin){
-    loadLocalThemeColors();
-  }
-});
-
-function loginAdmin(){
-  const user = document.getElementById('adminUsername').value.trim();
-  const pass = document.getElementById('adminPassword').value.trim();
-  if(!user || !pass){ alert('Preencha usuário e senha'); return; }
-  get(ref(db,'admins')).then(snap=>{
-    const admins = snap.val() || {};
-    const valid = Object.values(admins).some(a => a.username === user && a.password === pass);
-    if(valid){
-      isAdmin = true;
-      currentUser = user;
-      document.getElementById('memberSettings').classList.add('hidden');
-      document.getElementById('adminSettings').classList.remove('hidden');
-      showNotification('Login de administrador realizado!');
-      showAdminShieldIcon();
-      loadCredentials();
-      renderProofsPanel();
-    } else alert('Usuário ou senha incorretos.');
-  });
 }
 
 function createCredential(){
@@ -296,10 +319,27 @@ function loadCredentials(){
     Object.entries(creds).forEach(([key,val]) => {
       const div = document.createElement('div');
       div.className = 'flex justify-between items-center bg-gray-100 p-2 rounded';
+
       div.textContent = `Usuário: ${val.username} | Senha: ${val.password}`;
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Excluir';
+      btn.className = 'bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 ml-4';
+      btn.onclick = () => deleteCredential(key);
+      div.appendChild(btn);
+
       adminList.appendChild(div);
     });
   });
+}
+
+function deleteCredential(key){
+  if(confirm('Deseja realmente excluir esta credencial?')) {
+    remove(ref(db,'credentials/' + key)).then(()=>{
+      showNotification('Credencial excluída com sucesso!');
+      loadCredentials();
+    });
+  }
 }
 
 document.getElementById('addBarBtn').addEventListener('click', () => {
@@ -395,14 +435,14 @@ onValue(ref(db,'bars'), snap => {
 onValue(ref(db,'globalMessage'), snap => {
   const msg = snap.val();
   if (msg) {
-    if (!sessionStorage.getItem('globalMessageClosed')) {
+    if (sessionStorage.getItem('globalMessageClosed') !== msg) {
       const modal = document.getElementById('globalMessageModal');
       document.getElementById('globalMessageText').textContent = msg;
       modal.classList.remove('hidden');
 
       document.getElementById('closeGlobalMessageBtn').onclick = () => {
         modal.classList.add('hidden');
-        sessionStorage.setItem('globalMessageClosed', 'true');
+        sessionStorage.setItem('globalMessageClosed', msg);
       };
     }
   }
@@ -419,8 +459,12 @@ onValue(ref(db, 'globalColors'), snap => {
     barColor = colors.barColor;
     renderBars();
   }
+  if(colors.backgroundColor){
+    document.body.style.backgroundColor = colors.backgroundColor;
+  }
 });
 
+// Provas enviadas admin render e rejeição
 function renderProofsPanel(){
   const adminSettings = document.getElementById('adminSettings');
   const oldProofsPanel = document.getElementById('proofsPanel');
@@ -455,7 +499,6 @@ function renderProofsPanel(){
 
   adminSettings.appendChild(proofsPanel);
 }
-
 function rejectProof(barKey, proofIndex){
   if(!confirm('Deseja rejeitar esta prova? O membro terá que enviar outra prova válida.')) return;
 
@@ -472,29 +515,24 @@ function rejectProof(barKey, proofIndex){
   });
 }
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  feather.replace();
-  if(!isAdmin){
-    loadLocalThemeColors();
-  }
-});
-
 window.openSettingsModal = openSettingsModal;
 window.closeSettingsModal = closeSettingsModal;
 window.changeThemeColor = changeThemeColor;
 window.changeBarColor = changeBarColor;
+window.changeBackgroundColor = changeBackgroundColor;
 window.changeThemeColorMember = changeThemeColorMember;
 window.changeBarColorMember = changeBarColorMember;
+window.changeBackgroundColorMember = changeBackgroundColorMember;
 window.loginAdmin = loginAdmin;
 window.createCredential = createCredential;
 window.loadCredentials = loadCredentials;
+window.deleteCredential = deleteCredential;
 window.deleteBar = deleteBar;
 window.handleFileUpload = handleFileUpload;
 window.sendGlobalMessage = sendGlobalMessage;
 window.openAdminPanel = openAdminPanel;
+window.showAdminShieldIcon = showAdminShieldIcon;
 window.rejectProof = rejectProof;
-
 </script>
 
 </body>
